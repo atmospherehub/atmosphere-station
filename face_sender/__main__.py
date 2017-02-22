@@ -1,5 +1,7 @@
 import sys
 import signal
+import os
+import time
 import Queue
 from sender import Sender
 from detector import Detector
@@ -20,10 +22,10 @@ def main():
     except KeyboardInterrupt:
         pass
 
-    _term_handler(_stop_event, _threads)
+    _term_handler(_sender, _detector)
     return 0
 
-def _term_handler(stop_event, sender, detector):
+def _term_handler(sender, detector):
     detector.stop()
     sender.stop()
     sys.exit(0)

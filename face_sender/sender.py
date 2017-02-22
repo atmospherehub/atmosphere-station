@@ -18,7 +18,7 @@ class Sender(object):
         self._threads = []
 
     def start(self):
-        for i in range(1, _workers + 1):
+        for i in range(1, self._workers + 1):
             thread = threading.Thread(target=self._process_queue, args=(i,))
             thread.daemon = True
             thread.start()
