@@ -10,3 +10,6 @@ libv4l-dev
 libgtk2.0-dev
 libatlas-base-dev
 gfortran
+
+libopencv-dev
+python-opencv

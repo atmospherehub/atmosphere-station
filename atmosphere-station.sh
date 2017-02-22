@@ -24,7 +24,7 @@ PIDFILE=/var/run/$DAEMON_NAME.pid
 
 # pass gateway configurations to clien
 . /etc/environment
-DAEMON_OPTS="-e $ATMOSPHERE_ENDPOINT -m service"
+DAEMON_OPTS="-e $ATMOSPHERE_ENDPOINT -d true"
 
 # currently the ugly but working way to update the client on start
 update_client() {
