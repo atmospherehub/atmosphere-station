@@ -1,11 +1,8 @@
 from __future__ import print_function
-from imutils.video import VideoStream
-import numpy as np
-import imutils
+import threading
 import time
 import cv2
-import threading
-import Queue
+from imutils.video import VideoStream
 
 class Detector(object):
     """Detects faces and place those images in queue"""
@@ -41,12 +38,15 @@ class Detector(object):
 
             if len(faces) > 0:
                 print("Detected %d faces." % len(faces))
-                
+
                 self._queue.put(cv2.imencode('.jpg', frame)[1].tobytes())
-                
+
                 if self._imshow:
-                    for (x, y, w, h) in faces:
-                        cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 255, 0), 2)
+                    for (coord_x, coord_y, width, height) in faces:
+                        cv2.rectangle(frame,\
+                            (coord_x, coord_y),\
+                            (coord_x+width, coord_y+height),\
+                            (0, 255, 0), 2)
 
             if self._imshow:
                 cv2.imshow("Faces", frame)

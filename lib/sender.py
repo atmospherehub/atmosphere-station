@@ -24,8 +24,8 @@ class Sender(object):
             thread.start()
             self._threads.append(thread)
 
-    def _process_queue(self, threadNumber):
-        print("Starting sender '%d'..." % threadNumber)
+    def _process_queue(self, thread_number):
+        print("Starting sender '%d'..." % thread_number)
         while not self._stop_event.is_set():
             try:
                 image = self._queue.get(True, 1)
@@ -36,12 +36,12 @@ class Sender(object):
                 result = requests.post(self._endpoint,\
                     files={"file": image}, timeout=10)
                 print("De-queued by %d and sent with status %s:%s , waiting in queue %d"\
-                    % (threadNumber, result.status_code, result.text, self._queue.qsize()))
+                    % (thread_number, result.status_code, result.text, self._queue.qsize()))
                 result.close()
             except Exception as ex:
-                print("Error in '%d' sending %s" % (threadNumber, ex))
+                print("Error in '%d' sending %s" % (thread_number, ex))
 
-        print("Sender '%d' finished" % threadNumber)
+        print("Sender '%d' finished" % thread_number)
 
     def stop(self):
         print("Stopping senders...")

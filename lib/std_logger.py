@@ -17,9 +17,10 @@ class StdLogger(object):
         if message.rstrip() != "":
             self.logger.log(self.level, message.rstrip())
 
+    @staticmethod
     def register():
         """Replace stdout with logging to file at INFO and ERROR level"""
-        
+
         atm_logger = logging.getLogger("atmosphere-station")
         atm_logger.setLevel(logging.INFO)
 
@@ -27,9 +28,9 @@ class StdLogger(object):
         # keeping 3 backups
         handler = logging.handlers.TimedRotatingFileHandler(
             LOG_FILENAME, when="midnight", backupCount=3)
-            
+
         handler.setFormatter(logging.Formatter('%(asctime)s %(levelname)-8s %(message)s'))
         atm_logger.addHandler(handler)
 
-        sys.stdout = EnttoiLogger(atm_logger, logging.INFO)
-        sys.stderr = EnttoiLogger(atm_logger, logging.ERROR)
+        sys.stdout = StdLogger(atm_logger, logging.INFO)
+        sys.stderr = StdLogger(atm_logger, logging.ERROR)

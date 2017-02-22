@@ -13,7 +13,8 @@ def main():
     # get configuration of gateway from passed arguments
     parser = argparse.ArgumentParser(description="Atmosphere station")
     parser.add_argument("-e", "--endpoint", required=True, help="Endpoint address")
-    parser.add_argument("-d", "--daemon", default=False, help="Whether it is daemon service (e.g. headless)")
+    parser.add_argument("-d", "--daemon", default=False,\
+        help="Whether it is daemon service (e.g. headless)")
     args = parser.parse_args()
 
     # forward stdout to log file when running headless
