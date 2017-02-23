@@ -1,4 +1,5 @@
 from __future__ import print_function
+import os
 import threading
 import time
 import cv2 # pylint: disable=import-error
@@ -14,6 +15,8 @@ class Detector(object):
         self._imshow = imshow
         self._stop_event = threading.Event()
         self._thread = None
+        self._cascade_file_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),\
+            "haarcascade_frontalface_default.xml")
 
     def start(self):
         self._thread = threading.Thread(target=self._process_stream)
@@ -23,7 +26,7 @@ class Detector(object):
     def _process_stream(self):
         print("Starting detector...")
 
-        face_cascade = cv2.CascadeClassifier("haarcascade_frontalface_default.xml")
+        face_cascade = cv2.CascadeClassifier(self._cascade_file_path)
         stream = VideoStream(src=0).start()
         time.sleep(2.0)
         while not self._stop_event.is_set():
