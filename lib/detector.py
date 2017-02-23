@@ -1,7 +1,7 @@
 from __future__ import print_function
 import threading
 import time
-import cv2
+import cv2 # pylint: disable=import-error
 from imutils.video import VideoStream
 
 class Detector(object):
