@@ -5,7 +5,7 @@ cache:
   directories:
     - $HOME/.pip-cache/ 
 before_install:
-  - sudo apt-get -qq update
+  - sudo apt-get update
   - xargs sudo apt-get -y install < apt-requirements.txt
 install:
   - pip install -r requirements.txt --cache-dir $HOME/.pip-cache
