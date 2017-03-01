@@ -39,6 +39,7 @@ class Detector(object):
 
             # Checking blurriness
             if cv2.Laplacian(cropped_frame, cv2.CV_64F).var() < BLURRINESS_THRESHOLD:
+                print("Detected bluered face.")
                 continue
 
             gray = cv2.cvtColor(cropped_frame, cv2.COLOR_BGR2GRAY)
@@ -56,13 +57,13 @@ class Detector(object):
 
                 if self._imshow:
                     for (coord_x, coord_y, width, height) in faces:
-                        cv2.rectangle(frame,\
+                        cv2.rectangle(gray,\
                             (coord_x, coord_y),\
                             (coord_x+width, coord_y+height),\
                             (0, 255, 0), 2)
 
             if self._imshow:
-                cv2.imshow("Faces", frame)
+                cv2.imshow("Faces", gray)
                 cv2.waitKey(1)
 
         cv2.destroyAllWindows()
