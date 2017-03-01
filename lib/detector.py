@@ -35,16 +35,15 @@ class Detector(object):
         while not self._stop_event.is_set():
             frame = stream.read()
 
+            # crop image to smaller area to improve performance
             cropped_frame = frame[CROP_AREA_Y[0]:CROP_AREA_Y[1], CROP_AREA_X[0]:CROP_AREA_X[1]]
 
-            # Checking blurriness
-            if cv2.Laplacian(cropped_frame, cv2.CV_64F).var() < BLURRINESS_THRESHOLD:
-                print("Detected bluered face.")
-                if self._imshow:
-                    cv2.imshow("Faces", cropped_frame)
-                    cv2.waitKey(1)
+            # check blurriness before processing image detection
+            bluerness = cv2.Laplacian(cropped_frame, cv2.CV_64F).var()
+            gray = cv2.cvtColor(cropped_frame, cv2.COLOR_BGR2GRAY)
+            if  bluerness < BLURRINESS_THRESHOLD:
+                print("Detected bluered face with score %s." % bluerness)
             else:
-                gray = cv2.cvtColor(cropped_frame, cv2.COLOR_BGR2GRAY)
                 faces = face_cascade.detectMultiScale(
                     gray,
                     scaleFactor=1.1,
@@ -63,9 +62,11 @@ class Detector(object):
                                 (coord_x, coord_y),\
                                 (coord_x+width, coord_y+height),\
                                 (0, 255, 0), 2)
-                if self._imshow:
-                    cv2.imshow("Faces", gray)
-                    cv2.waitKey(1)
+
+            # display image if non-headless 
+            if self._imshow:
+                cv2.imshow("Faces", gray)
+                cv2.waitKey(1)
 
         cv2.destroyAllWindows()
         stream.stop()

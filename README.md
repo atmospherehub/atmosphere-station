@@ -39,7 +39,7 @@ sudo cp atmosphere-station.sh /etc/init.d
 Make sure that both `atmosphere-station.sh` and `__main__.py` are executable:
 
 ```bash
-sudo chmod 755 /etc/init.d/atmosphere-stationenttoi.sh
+sudo chmod 755 /etc/init.d/atmosphere-station.sh
 chmod 755 __main__.py
 ```
 
