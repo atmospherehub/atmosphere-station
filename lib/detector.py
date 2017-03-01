@@ -52,7 +52,7 @@ class Detector(object):
                     flags=cv2.CASCADE_SCALE_IMAGE)
 
                 if len(faces) > 0:
-                    print("Detected %d faces with bluerness %d." % len(faces), bluerness)
+                    print("Detected %d faces with bluerness %d." % (len(faces), bluerness))
 
                     self._queue.put(cv2.imencode('.jpg', frame)[1].tobytes())
 
