@@ -40,31 +40,32 @@ class Detector(object):
             # Checking blurriness
             if cv2.Laplacian(cropped_frame, cv2.CV_64F).var() < BLURRINESS_THRESHOLD:
                 print("Detected bluered face.")
-                continue
-
-            gray = cv2.cvtColor(cropped_frame, cv2.COLOR_BGR2GRAY)
-            faces = face_cascade.detectMultiScale(
-                gray,
-                scaleFactor=1.1,
-                minNeighbors=5,
-                minSize=(30, 30),
-                flags=cv2.CASCADE_SCALE_IMAGE)
-
-            if len(faces) > 0:
-                print("Detected %d faces." % len(faces))
-
-                self._queue.put(cv2.imencode('.jpg', frame)[1].tobytes())
-
                 if self._imshow:
-                    for (coord_x, coord_y, width, height) in faces:
-                        cv2.rectangle(gray,\
-                            (coord_x, coord_y),\
-                            (coord_x+width, coord_y+height),\
-                            (0, 255, 0), 2)
+                    cv2.imshow("Faces", cropped_frame)
+                    cv2.waitKey(1)
+            else:
+                gray = cv2.cvtColor(cropped_frame, cv2.COLOR_BGR2GRAY)
+                faces = face_cascade.detectMultiScale(
+                    gray,
+                    scaleFactor=1.1,
+                    minNeighbors=5,
+                    minSize=(30, 30),
+                    flags=cv2.CASCADE_SCALE_IMAGE)
 
-            if self._imshow:
-                cv2.imshow("Faces", gray)
-                cv2.waitKey(1)
+                if len(faces) > 0:
+                    print("Detected %d faces." % len(faces))
+
+                    self._queue.put(cv2.imencode('.jpg', frame)[1].tobytes())
+
+                    if self._imshow:
+                        for (coord_x, coord_y, width, height) in faces:
+                            cv2.rectangle(gray,\
+                                (coord_x, coord_y),\
+                                (coord_x+width, coord_y+height),\
+                                (0, 255, 0), 2)
+                if self._imshow:
+                    cv2.imshow("Faces", gray)
+                    cv2.waitKey(1)
 
         cv2.destroyAllWindows()
         stream.stop()
