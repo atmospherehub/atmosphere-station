@@ -52,7 +52,7 @@ class Detector(object):
                     flags=cv2.CASCADE_SCALE_IMAGE)
 
                 if len(faces) > 0:
-                    print("Detected %d faces." % len(faces))
+                    print("Detected %d faces with bluerness %d." % len(faces), bluerness)
 
                     self._queue.put(cv2.imencode('.jpg', frame)[1].tobytes())
 
@@ -63,7 +63,7 @@ class Detector(object):
                                 (coord_x+width, coord_y+height),\
                                 (0, 255, 0), 2)
 
-            # display image if non-headless 
+            # display image if non-headless
             if self._imshow:
                 cv2.imshow("Faces", gray)
                 cv2.waitKey(1)
