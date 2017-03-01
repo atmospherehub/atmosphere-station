@@ -5,6 +5,9 @@ import time
 import cv2 # pylint: disable=import-error
 from imutils.video import VideoStream
 
+from settings import CROP_AREA_X, CROP_AREA_Y, BLURRINESS_THRESHOLD
+
+
 class Detector(object):
     """Detects faces and place those images in queue"""
 
@@ -31,7 +34,14 @@ class Detector(object):
         time.sleep(2.0)
         while not self._stop_event.is_set():
             frame = stream.read()
-            gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+
+            cropped_frame = frame[CROP_AREA_Y[0]:CROP_AREA_Y[1], CROP_AREA_X[0]:CROP_AREA_X[1]]
+
+            # Checking blurriness
+            if cv2.Laplacian(cropped_frame, cv2.CV_64F).var() < BLURRINESS_THRESHOLD:
+                continue
+
+            gray = cv2.cvtColor(cropped_frame, cv2.COLOR_BGR2GRAY)
             faces = face_cascade.detectMultiScale(
                 gray,
                 scaleFactor=1.1,
