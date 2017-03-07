@@ -1,6 +1,6 @@
-from __future__ import print_function
 import threading
 import Queue
+import logging
 import requests
 
 class Sender(object):
@@ -11,6 +11,7 @@ class Sender(object):
             raise ValueError("'endpoint' is required")
         if not queue:
             raise ValueError("'queue' is required")
+        self._logger = logging.getLogger(__name__)
         self._endpoint = endpoint
         self._queue = queue
         self._workers = workers
@@ -25,7 +26,7 @@ class Sender(object):
             self._threads.append(thread)
 
     def _process_queue(self, thread_number):
-        print("Starting sender '%d'..." % thread_number)
+        self._logger.info("Starting sender '%d'...", thread_number)
         while not self._stop_event.is_set():
             try:
                 image = self._queue.get(True, 1)
@@ -34,17 +35,17 @@ class Sender(object):
 
             try:
                 result = requests.post(self._endpoint,\
-                    files={"file": image}, timeout=10)
-                print("De-queued by %d and sent with status %s:%s , waiting in queue %d"\
-                    % (thread_number, result.status_code, result.text, self._queue.qsize()))
+                    files={"file": image}, timeout=20)
+                self._logger.debug("De-queued by %d and sent with %s:%s  waiting in queue %d",\
+                    thread_number, result.status_code, result.text, self._queue.qsize())
                 result.close()
-            except Exception as ex:
-                print("Error in '{}' sending {}".format(thread_number, ex))
+            except Exception:
+                self._logger.exception("Error in %d", thread_number)
 
-        print("Sender '%d' finished" % thread_number)
+        self._logger.info("Sender '%d' finished", thread_number)
 
     def stop(self):
-        print("Stopping senders...")
+        self._logger.info("Stopping senders...")
         self._stop_event.set()
         for thread in self._threads:
             thread.join()

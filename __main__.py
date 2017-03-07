@@ -3,10 +3,12 @@ import sys
 import signal
 import time
 import Queue
+import logging
 import argparse
 from lib.sender import Sender
 from lib.detector import Detector
 from lib.std_logger import StdLogger
+from metrology.reporter.logger import LoggerReporter
 
 def main():
     # get configuration of gateway from passed arguments
@@ -18,15 +20,20 @@ def main():
 
     # forward stdout to log file when running headless
     if args.daemon:
-        StdLogger.register()
+        StdLogger.register_file()
+    else:
+        StdLogger.register_console()
 
     # start sub-services
     _queue = Queue.Queue()
     _sender = Sender(args.endpoint, _queue, 1)
     _detector = Detector(_queue, not args.daemon)
+    _reporter = LoggerReporter(level=logging.INFO, interval=10)
 
-    signal.signal(signal.SIGTERM, lambda signal, frame: _term_handler(_sender, _detector))
+    signal.signal(signal.SIGTERM, lambda signal,\
+        frame: _term_handler(_sender, _detector, _reporter))
 
+    _reporter.start()
     _sender.start()
     _detector.start()
 
@@ -36,10 +43,11 @@ def main():
     except KeyboardInterrupt:
         pass
 
-    _term_handler(_sender, _detector)
+    _term_handler(_sender, _detector, _reporter)
     return 0
 
-def _term_handler(sender, detector):
+def _term_handler(sender, detector, reporter):
+    reporter.stop()
     detector.stop()
     sender.stop()
     sys.exit(0)
