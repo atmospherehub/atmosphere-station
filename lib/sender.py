@@ -39,7 +39,7 @@ class Sender(object):
                     % (thread_number, result.status_code, result.text, self._queue.qsize()))
                 result.close()
             except Exception as ex:
-                print("Error in '%d' sending %s" % (thread_number, ex))
+                print("Error in '{}' sending {}".format(thread_number, ex))
 
         print("Sender '%d' finished" % thread_number)
 
