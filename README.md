@@ -2,7 +2,7 @@
 
 |Branch|Travis|
 |------|:------:|
-|master|[![Build Status](https://img.shields.io/travis/atmospherehub/atmosphere-station/master.svg)](https://travis-ci.org/atmospherehub/atmosphere-station.svg?branch=master)|
+|master|[![Build Status](https://img.shields.io/travis/atmospherehub/atmosphere-station/master.svg)](https://travis-ci.org/atmospherehub/atmosphere-station)|
 
 
 The app runs on RPi and detects faces using Haar cascade classifier from video stream. 

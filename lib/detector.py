@@ -5,9 +5,7 @@ import time
 import cv2 # pylint: disable=import-error
 from metrology import Metrology
 from imutils.video import VideoStream
-
 from settings import CROP_AREA_X, CROP_AREA_Y, BLURRINESS_THRESHOLD
-
 
 class Detector(object):
     """Detects faces and place those images in queue"""
