@@ -26,9 +26,9 @@ def main():
 
     # start sub-services
     _queue = Queue.Queue()
-    _sender = Sender(args.endpoint, _queue, 1)
+    _sender = Sender(args.endpoint, _queue, 3)
     _detector = Detector(_queue, not args.daemon)
-    _reporter = LoggerReporter(level=logging.INFO, interval=10)
+    _reporter = LoggerReporter(level=logging.INFO, interval=15)
 
     signal.signal(signal.SIGTERM, lambda signal,\
         frame: _term_handler(_sender, _detector, _reporter))

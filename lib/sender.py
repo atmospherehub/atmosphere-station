@@ -2,6 +2,7 @@ import threading
 import Queue
 import logging
 import requests
+from metrology import Metrology
 
 class Sender(object):
     """Sends images that finds in queue"""
@@ -17,6 +18,7 @@ class Sender(object):
         self._workers = workers
         self._stop_event = threading.Event()
         self._threads = []
+        self._counter_failed = Metrology.counter('Files failed')
 
     def start(self):
         for i in range(1, self._workers + 1):
@@ -34,15 +36,22 @@ class Sender(object):
                 continue
 
             try:
-                result = requests.post(self._endpoint,\
-                    files={"file": image}, timeout=20)
-                self._logger.debug("De-queued by %d and sent with %s:%s  waiting in queue %d",\
-                    thread_number, result.status_code, result.text, self._queue.qsize())
-                result.close()
+                self._send_file(image, thread_number)
             except Exception:
-                self._logger.exception("Error in %d", thread_number)
+                self._logger.exception("Error sending file in thread %d", thread_number)
+                self._counter_failed.increment()
+
+            self._logger.debug("Waiting in queue to be sent %d", self._queue.qsize())
 
         self._logger.info("Sender '%d' finished", thread_number)
+
+    @Metrology.timer('File sending')
+    def _send_file(self, file_to_send, thread_number):
+        result = requests.post(self._endpoint,\
+            files={"file": file_to_send}, timeout=20)
+        self._logger.debug("De-queued by %d and sent with status %s:%s",\
+            thread_number, result.status_code, result.text)
+        result.close()
 
     def stop(self):
         self._logger.info("Stopping senders...")

@@ -23,6 +23,7 @@ class Detector(object):
         self._face_cascade = None
         self._cascade_file_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),\
             "haarcascade_frontalface_default.xml")
+        self._timer_faces_lookup = Metrology.timer("Faces lookup")
 
     def start(self):
         self._thread = threading.Thread(target=self._process_stream)
@@ -43,7 +44,7 @@ class Detector(object):
         cv2.destroyAllWindows()
         stream.stop()
 
-    @Metrology.meter('frames')
+    @Metrology.timer('Frame processing')
     def _process_frame(self, frame):
         # crop image to smaller area to improve performance
         cropped_frame = frame[CROP_AREA_Y[0]:CROP_AREA_Y[1], CROP_AREA_X[0]:CROP_AREA_X[1]]
@@ -54,12 +55,14 @@ class Detector(object):
         if  bluerness < BLURRINESS_THRESHOLD:
             self._logger.debug("Detected bluered face with score %s.", bluerness)
         else:
-            faces = self._face_cascade.detectMultiScale(
-                gray,
-                scaleFactor=1.1,
-                minNeighbors=5,
-                minSize=(30, 30),
-                flags=cv2.CASCADE_SCALE_IMAGE)
+            faces = None
+            with self._timer_faces_lookup:
+                faces = self._face_cascade.detectMultiScale(
+                    gray,
+                    scaleFactor=1.1,
+                    minNeighbors=5,
+                    minSize=(30, 30),
+                    flags=cv2.CASCADE_SCALE_IMAGE)
 
             if len(faces) > 0:
                 self._logger.debug("Detected %d faces with bluerness %d.", len(faces), bluerness)
