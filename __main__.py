@@ -26,16 +26,15 @@ def main():
 
     # start sub-services
     _queue = Queue.Queue()
-    _sender = Sender(args.endpoint, _queue, 3)
-    _detector = Detector(_queue, not args.daemon)
-    _reporter = LoggerReporter(level=logging.INFO, interval=15)
+    _services = []
+    _services.append(Sender(args.endpoint, _queue, 3))
+    _services.append(Detector(_queue, not args.daemon))
+    _services.append(LoggerReporter(level=logging.INFO, interval=360 if args.daemon else 30))
 
-    signal.signal(signal.SIGTERM, lambda signal,\
-        frame: _term_handler(_sender, _detector, _reporter))
+    signal.signal(signal.SIGTERM, lambda signal, frame: _term_handler(_services))
 
-    _reporter.start()
-    _sender.start()
-    _detector.start()
+    for service in _services:
+        service.start()
 
     try:
         while True:
@@ -43,13 +42,12 @@ def main():
     except KeyboardInterrupt:
         pass
 
-    _term_handler(_sender, _detector, _reporter)
+    _term_handler(_services)
     return 0
 
-def _term_handler(sender, detector, reporter):
-    reporter.stop()
-    detector.stop()
-    sender.stop()
+def _term_handler(services):
+    for service in services:
+        service.stop()
     sys.exit(0)
 
 sys.exit(main())
