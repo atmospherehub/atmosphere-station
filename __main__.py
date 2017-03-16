@@ -3,7 +3,6 @@ import sys
 import signal
 import time
 import Queue
-import logging
 import argparse
 from lib.sender import Sender
 from lib.detector import Detector
