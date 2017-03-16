@@ -8,7 +8,6 @@ import argparse
 from lib.sender import Sender
 from lib.detector import Detector
 from lib.std_logger import StdLogger
-from metrology.reporter.logger import LoggerReporter
 
 def main():
     # get configuration of gateway from passed arguments
@@ -29,7 +28,6 @@ def main():
     _services = []
     _services.append(Sender(args.endpoint, _queue, 3))
     _services.append(Detector(_queue, not args.daemon))
-    _services.append(LoggerReporter(level=logging.INFO, interval=360 if args.daemon else 30))
 
     signal.signal(signal.SIGTERM, lambda signal, frame: _term_handler(_services))
 
