@@ -4,7 +4,8 @@ import threading
 import logging
 import time
 import cv2 # pylint: disable=import-error
-from imutils.video import VideoStream
+from picamera.array import PiRGBArray
+from picamera import PiCamera
 from settings import CROP_AREA_X, CROP_AREA_Y, BLURRINESS_THRESHOLD
 
 class Detector(object):
@@ -31,19 +32,24 @@ class Detector(object):
         self._logger.info("Starting detector...")
 
         self._face_cascade = cv2.CascadeClassifier(self._cascade_file_path)
-        stream = VideoStream(src=0).start()
-        time.sleep(2.0)
+        # initialize the camera and grab a reference to the raw camera capture
+        camera = PiCamera()
+        camera.resolution = (1280, 720)
+        camera.framerate = 32
+        raw_capture = PiRGBArray(camera, size=(1280, 720))
+        time.sleep(0.1)
 
-        while not self._stop_event.is_set():
-            frame = stream.read()
-            self._process_frame(frame)
+        for frame in camera.capture_continuous(raw_capture, format="bgr", use_video_port=True):
+            self._process_frame(frame.array)
+            raw_capture.truncate(0)
+            if self._stop_event.is_set():
+                break
 
         cv2.destroyAllWindows()
-        stream.stop()
 
     def _process_frame(self, frame):
         # crop image to smaller area to improve performance
-        cropped_frame = frame[CROP_AREA_Y[0]:CROP_AREA_Y[1], CROP_AREA_X[0]:CROP_AREA_X[1]]
+        cropped_frame = frame#[CROP_AREA_Y[0]:CROP_AREA_Y[1], CROP_AREA_X[0]:CROP_AREA_X[1]]
 
         # check blurriness before processing image detection
         bluerness = cv2.Laplacian(cropped_frame, cv2.CV_64F).var()
