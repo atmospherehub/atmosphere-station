@@ -6,13 +6,16 @@ import requests
 class Sender(object):
     """Sends images that finds in queue"""
 
-    def __init__(self, endpoint, queue, workers=1):
+    def __init__(self, endpoint, token, queue, workers=1):
         if not endpoint:
             raise ValueError("'endpoint' is required")
+        if not token:
+            raise ValueError("'token' is required")
         if not queue:
             raise ValueError("'queue' is required")
         self._logger = logging.getLogger(__name__)
         self._endpoint = endpoint
+        self._token = token
         self._queue = queue
         self._workers = workers
         self._stop_event = threading.Event()
@@ -43,8 +46,11 @@ class Sender(object):
         self._logger.info("Sender '%d' finished", thread_number)
 
     def _send_file(self, file_to_send, thread_number):
-        result = requests.post(self._endpoint,\
-            files={"file": file_to_send}, timeout=20)
+        result = requests.post(
+            self._endpoint,
+            headers={"Authorization": "Bearer " + self._token},
+            files={"file": file_to_send},
+            timeout=20)
         self._logger.debug("De-queued by %d and sent with status %s:%s",\
             thread_number, result.status_code, result.text)
         result.close()

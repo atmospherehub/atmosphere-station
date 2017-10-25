@@ -12,6 +12,7 @@ def main():
     # get configuration of gateway from passed arguments
     parser = argparse.ArgumentParser(description="Atmosphere station")
     parser.add_argument("-e", "--endpoint", required=True, help="Endpoint address")
+    parser.add_argument("-t", "--token", required=True, help="Authorization token")
     parser.add_argument("-d", "--daemon", default=False,\
         help="Whether it is daemon service (e.g. headless)")
     args = parser.parse_args()
@@ -25,7 +26,7 @@ def main():
     # start sub-services
     _queue = Queue.Queue()
     _services = []
-    _services.append(Sender(args.endpoint, _queue, 3))
+    _services.append(Sender(args.endpoint, args.token, _queue, 3))
     _services.append(Detector(_queue, not args.daemon))
 
     signal.signal(signal.SIGTERM, lambda signal, frame: _term_handler(_services))

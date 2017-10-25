@@ -3,19 +3,18 @@ python:
   - "2.7"
 cache:
   directories:
-    - $HOME/.pip-cache/ 
+    - $HOME/.pip-cache/
 before_install:
   - sudo apt-get update
   - xargs sudo apt-get -y install < apt-requirements.txt
 install:
-  - pip install -r requirements.txt --cache-dir $HOME/.pip-cache
+  - pip install -r requirements.ci.txt --cache-dir $HOME/.pip-cache
   - pip install pylint --cache-dir $HOME/.pip-cache
-  
-script: 
+
+script:
   - pylint __main__.py lib/ --msg-template='[{msg_id}]({line}) {msg}'
 
 branches:
   only:
     - master
     - dev
-  
