@@ -22,9 +22,9 @@ PIDFILE=/var/run/$DAEMON_NAME.pid
 
 . /lib/lsb/init-functions
 
-# pass gateway configurations to clien
+# pass gateway configurations to client
 . /etc/environment
-DAEMON_OPTS="-e $ATMOSPHERE_ENDPOINT -d true"
+DAEMON_OPTS="-e $ATMOSPHERE_ENDPOINT -t $ATMOSPHERE_TOKEN -d true"
 
 # currently the ugly but working way to update the client on start
 update_client() {

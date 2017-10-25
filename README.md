@@ -13,7 +13,7 @@ Once the face detected it sends the image via HTTP to the configurable endpoint.
 Make sure that all required packages installed from `apt-requirments.txt` and `requirments.txt` files. And then simply execute:
 
 ```
-python . -e https://posttestserver.com/post.php
+python . -e https://posttestserver.com/post -t SECRET_TOKEN
 ```
 
 > On Raspberry Pi you will have to compile OpenCV from source.
@@ -23,11 +23,13 @@ python . -e https://posttestserver.com/post.php
 Add environment variable to configure endpoint to `/etc/environment`:
 ```
 ATMOSPHERE_ENDPOINT=http://...
+ATMOSPHERE_TOKEN=SECRET_...
 ```
 
 Then execute `sudo visudo` and add:
 ```
 Defaults    env_keep +="ATMOSPHERE_ENDPOINT"
+Defaults    env_keep +="ATMOSPHERE_TOKEN"
 ```
 
 Assuming that the project cloned into `/home/pi/atmosphere-station` (this can me changed in `atmosphere-station.sh`), copy init script to `/etc/init.d`:

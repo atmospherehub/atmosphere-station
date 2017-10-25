@@ -1,12 +1,10 @@
-# pylint: disable=R0902
 import os
 import threading
 import logging
 import time
 import cv2 # pylint: disable=import-error
-from picamera.array import PiRGBArray
-from picamera import PiCamera
-from settings import CROP_AREA_X, CROP_AREA_Y, BLURRINESS_THRESHOLD
+from picamera.array import PiRGBArray # pylint: disable=import-error
+from picamera import PiCamera # pylint: disable=import-error
 
 class Detector(object):
     """Detects faces and place those images in queue"""
@@ -48,13 +46,10 @@ class Detector(object):
         cv2.destroyAllWindows()
 
     def _process_frame(self, frame):
-        # crop image to smaller area to improve performance
-        cropped_frame = frame#[CROP_AREA_Y[0]:CROP_AREA_Y[1], CROP_AREA_X[0]:CROP_AREA_X[1]]
-
         # check blurriness before processing image detection
-        bluerness = cv2.Laplacian(cropped_frame, cv2.CV_64F).var()
-        gray = cv2.cvtColor(cropped_frame, cv2.COLOR_BGR2GRAY)
-        if  bluerness < BLURRINESS_THRESHOLD:
+        bluerness = cv2.Laplacian(frame, cv2.CV_64F).var()
+        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        if  bluerness < 50:
             self._logger.debug("Detected bluered face with score %s.", bluerness)
         else:
             faces = self._face_cascade.detectMultiScale(
@@ -64,7 +59,7 @@ class Detector(object):
                 minSize=(30, 30),
                 flags=cv2.CASCADE_SCALE_IMAGE)
 
-            if len(faces) > 0:
+            if faces:
                 self._logger.debug("Detected %d faces with bluerness %d.", len(faces), bluerness)
 
                 self._queue.put(cv2.imencode('.jpg', frame)[1].tobytes())
