@@ -59,7 +59,7 @@ class Detector(object):
                 minSize=(30, 30),
                 flags=cv2.CASCADE_SCALE_IMAGE)
 
-            if faces:
+            if len(faces) > 0:
                 self._logger.debug("Detected %d faces with bluerness %d.", len(faces), bluerness)
 
                 self._queue.put(cv2.imencode('.jpg', frame)[1].tobytes())
