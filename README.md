@@ -10,7 +10,7 @@ Once the face detected it sends the image via HTTP to the configurable endpoint.
 
 ## Running application
 
-Make sure that all required packages installed from `apt-requirments.txt` and `requirments.txt` files. And then simply execute:
+Make sure that all required packages installed from `apt-requirments.txt` and `requirments.txt` files. [OpenCV](https://opencv.org/) is not available on Raspbian Jessie and needs to be [compiled on RaspberryPi](https://raspberrypi.stackexchange.com/a/69176/41253). Once all requirments meat simply execute:
 
 ```
 python . -e https://posttestserver.com/post -t SECRET_TOKEN
