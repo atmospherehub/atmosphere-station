@@ -9,7 +9,6 @@ before_install:
   - xargs sudo apt-get -y install < apt-requirements.txt
 install:
   - pip install -r requirements.ci.txt --cache-dir $HOME/.pip-cache
-  - pip install pylint --cache-dir $HOME/.pip-cache
 
 script:
   - pylint __main__.py lib/ --msg-template='[{msg_id}]({line}) {msg}'
